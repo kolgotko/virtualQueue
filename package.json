@@ -1,7 +1,7 @@
 {
-  "name": "queue",
+  "name": "virtualQueue",
   "version": "1.0.0",
-  "description": "virtual queue",
+  "description": "virtual queue service",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +9,12 @@
   "author": "Igor Bykov (con29rus@gmail.com)",
   "license": "MIT",
   "dependencies": {
-    "jade": "^1.11.0"
+    "body-parser": "^1.15.0",
+    "connect-multiparty": "^2.0.0",
+    "cookie-parser": "^1.4.1",
+    "cookie-session": "^1.2.0",
+    "express": "^4.13.4",
+    "jade": "^1.11.0",
+    "redis": "^2.5.3"
   }
 }

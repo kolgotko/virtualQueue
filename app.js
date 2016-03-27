@@ -6,8 +6,6 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var multipart = require('connect-multiparty');
-var MongoClient = require('mongodb').MongoClient;
-var assert = require('assert');
 
 var redis = require("redis");
 var rclient = redis.createClient({prefix: 'queue:'});
