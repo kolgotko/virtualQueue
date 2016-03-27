@@ -1,0 +1,11 @@
+doctype html
+html(lang="ru")
+	head
+		title Клиенты
+		meta(charset="utf-8")
+	body
+		each obj, qid in queues
+			div(id="#{qid}").queue
+				div.title= qid
+				each value, id in obj
+					div.client= id

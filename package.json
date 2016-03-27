@@ -1,0 +1,14 @@
+{
+  "name": "queue",
+  "version": "1.0.0",
+  "description": "virtual queue",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Igor Bykov (con29rus@gmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "jade": "^1.11.0"
+  }
+}
