@@ -8,30 +8,13 @@
 .margin-0{
 	margin: 0px;
 }
-.menu{
-	height: 100vh;
-	width: 100%;
+.hflex{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
-.row{
-	height: 50vh;
-}
-.row .columns{
-	height: 100%;
-	padding: 1rem;
-}
-.row .columns button{
-	width: 100%;
-	height: 100%;
-	display: block;
-	color: #fff;
-}
-.row .columns button h1{
-	color: #fff;
-}
-.content{
-	font-size: 1rem;
-	text-align: center;
-	background: #fff;
-	width: 100%;
-	height: 100%;
+.vflex{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }

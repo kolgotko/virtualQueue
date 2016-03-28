@@ -5,6 +5,8 @@ Client.prototype.change = function(cat){
 	var fd = new FormData();
 	fd.append('category', cat);
 
+	sf.popup.open();
+
 	var data = {
 		dst: '/new-client',
 		callback: function(req){
@@ -15,11 +17,15 @@ Client.prototype.change = function(cat){
 					res.content = '<h1>' + res.content + '</h1>';
 					res.content = 'Ваш номер: <br />' + res.content;
 					res.content = '<div class="content">' + res.content + '</div>';
-					sf.popup(res.content);
+					sf.popup.insert(res.content);
 				}
-				else sf.alert('Не достаочно данных.', 'warn');
+				else{
+					sf.popup.close();
+					sf.alert('Не достаочно данных.', 'warn');
+				}
 			}
 			catch(e){
+				sf.popup.close();
 				sf.alert('Получены не корректные данные.');
 				console.log(e);
 				console.log(req.responseText);
@@ -27,6 +33,7 @@ Client.prototype.change = function(cat){
 		},
 		fallback: function(req){
 			sf.alert('Произошла ошибка подключения.', 'err');
+			sf.popup.close();
 		},
 	};
 
