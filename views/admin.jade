@@ -14,5 +14,7 @@ html(lang="ru")
 					div.title= qid
 					each value, id in obj
 						div.client= id
+							button(onclick="admin.close('#{qid}', '#{id}');").closer
 
-		script(arc="/js/sf.js")
+		script(src="/js/sf.js")
+		script(src="/js/admin.js")

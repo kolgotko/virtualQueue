@@ -30,6 +30,23 @@ app.use(cookieSession({
 	keys: ['key1', 'key2']
 }));
 
+function getContent(){
+	
+}
+
+app.post('/admin/close', function(req, resp, next){
+
+	if(!req.body.queue || !req.body.id)
+		resp.json({ notify: 'Ошибка запроса. Переданы не все данные.' });
+
+		rclient.hdel(req.body.queue, req.body.id, function(err, res){
+
+			resp.json({ content: res});
+
+		});
+
+});
+
 app.post('/new-client', (req, resp) => {
 
 	if(!req.body.category) resp.json({ notify: 'Ошибка запроса.' });
