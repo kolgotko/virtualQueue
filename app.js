@@ -2,6 +2,7 @@
 'use strict';
 
 var express = require('express');
+var jade = require('jade');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
@@ -30,10 +31,6 @@ app.use(cookieSession({
 	keys: ['key1', 'key2']
 }));
 
-function getContent(){
-	
-}
-
 app.post('/admin/close', function(req, resp, next){
 
 	if(!req.body.queue || !req.body.id)
@@ -41,7 +38,7 @@ app.post('/admin/close', function(req, resp, next){
 
 		rclient.hdel(req.body.queue, req.body.id, function(err, res){
 
-			resp.json({ content: res});
+			resp.json({ content: res });
 
 		});
 

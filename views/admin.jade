@@ -14,7 +14,7 @@ html(lang="ru")
 					div.title= qid
 					each value, id in obj
 						div.client= id
-							button(onclick="admin.close('#{qid}', '#{id}');").closer
+							button(onclick="admin.close('#{qid}', '#{id}');").closer.margin-0.padding-0
 
 		script(src="/js/sf.js")
 		script(src="/js/admin.js")

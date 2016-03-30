@@ -14,4 +14,13 @@
 	text-align: center;
 	background-color: #ccc;
 	margin: 1rem;
+	position: relative;
+}
+.queue .client .closer{
+	position: absolute;
+	width: 1rem;
+	height: 1rem;
+	display: inline-block;
+	top: 0px;
+	right: 0px;
 }
