@@ -7,6 +7,11 @@ var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var bodyParser = require('body-parser');
 var multipart = require('connect-multiparty');
+var queue = require('./queue.js');
+
+queue.get('test').newItem(function(key){
+	console.log('key: '+key);
+});
 
 var redis = require("redis");
 var rclient = redis.createClient({prefix: 'queue:'});
