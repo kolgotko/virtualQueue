@@ -9,10 +9,6 @@ var bodyParser = require('body-parser');
 var multipart = require('connect-multiparty');
 var queue = require('./queue.js');
 
-queue.get('test').newItem(function(key){
-	console.log('key: '+key);
-});
-
 var redis = require("redis");
 var rclient = redis.createClient({prefix: 'queue:'});
 
@@ -41,11 +37,9 @@ app.post('/admin/close', function(req, resp, next){
 	if(!req.body.queue || !req.body.id)
 		resp.json({ notify: 'Ошибка запроса. Переданы не все данные.' });
 
-		rclient.hdel(req.body.queue, req.body.id, function(err, res){
-
-			resp.json({ content: res });
-
-		});
+	queue.get(req.body.queue).rmItem(req.body.id, (err, status) => {
+		resp.json({ status: status });
+	});
 
 });
 
@@ -53,42 +47,9 @@ app.post('/new-client', (req, resp) => {
 
 	if(!req.body.category) resp.json({ notify: 'Ошибка запроса.' });
 
-	// rclient.del(req.body.category);
-	
-	(new Promise((res, rej) => {
-		
-		rclient.hkeys(req.body.category, function(err, replies){
-			if(err) rej(err);
-			res(replies);
-		});
-
-	}))
-		.then(replies => {
-
-			if(replies.length){
-				var lastKey = replies.pop();
-				return new Promise((res, rej) => {
-
-					rclient.hget(req.body.category, lastKey, (err, replie) => {
-						if(err) rej(err);
-						res(replie);
-					});
-				
-				});
-			} 
-			else return 0;
-		})
-		.then(val => {
-
-			val++;
-			var key = req.body.category[0] + val;
-			rclient.hset(req.body.category, key, val);
-			resp.json({ content: key.toUpperCase() });
-
-		})
-		.catch(err => {
-			resp.json({ notify: err });
-		});
+	queue.get(req.body.category).newItem(id => {
+		resp.json({ content: id.toUpperCase() });
+	});
 
 });
 

@@ -56,6 +56,8 @@ class Queue{
 	}
 
 	rmItem(key, callback){ rclient.hdel(this.id, key, callback); }
+
+	rm(callback){ rclient.del(this.id, callback); }
 	
 }
 
