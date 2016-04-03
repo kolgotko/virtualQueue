@@ -1,7 +1,7 @@
 'use strict';
 
 var redis = require("redis");
-var rclient = redis.createClient({prefix: 'queue:'});
+var rclient = redis.createClient({prefix: 'virtual_queue:'});
 rclient.on("error", (err) => { console.log("Error " + err); });
 
 class Queue{
@@ -12,7 +12,7 @@ class Queue{
 
 		return (new Promise((res, rej) => {
 
-			rclient.keys('queue:*', (err, keys) => {
+			rclient.keys('virtual_queue:queue:*', (err, keys) => {
 
 				if(err) rej(err);
 				res(keys);
@@ -23,8 +23,10 @@ class Queue{
 			.then(keys => {
 
 				var result = keys.map(key => {
-					return this.get.call(this, key.split(':')[1]);
+					return this.get.call(this, key.split(':')[2]);
 				});
+
+				console.log(result)
 
 				if(callback) callback(result);
 				return result;
@@ -36,7 +38,7 @@ class Queue{
 
 	static subscribe(callback){
 
-		var subscriber = redis.createClient({prefix: 'queue:'});
+		var subscriber = redis.createClient();
 		subscriber.on("error", (err) => { console.log("Error " + err); });
 
 		subscriber.on('message', (channel, message) => {
@@ -44,11 +46,11 @@ class Queue{
 			subscriber.quit();
 		});
 
-		subscriber.subscribe('channel');
+		subscriber.subscribe('virtual_queue:channel');
 
 	}
 
-	static publish(message){ rclient.publish('channel', message); }
+	static publish(message){ rclient.publish('virtual_queue:channel', message); }
 
 	constructor(id){ this.id = id; }
 
@@ -56,7 +58,7 @@ class Queue{
 
 		return (new Promise((res, rej) => {
 
-			rclient.hgetall(this.id, (err, obj) => {
+			rclient.hgetall('queue:' + this.id, (err, obj) => {
 
 				if(err) rej(err);
 				if(callback) callback(obj);
@@ -65,6 +67,27 @@ class Queue{
 			});
 
 		}));
+
+	}
+
+	newAlias(alias){
+
+		rclient.hset('aliases', this.id, alias);
+		return this;
+
+	}
+
+	getAlias(callback){
+
+		return new Promise((res, rej) => {
+
+			rclient.hget('aliases', this.id, (err, alias) => {
+				if(err) rej(err);
+				if(callback) callback(alias);
+				res(alias);
+			});
+
+		});
 
 	}
 
@@ -87,22 +110,26 @@ class Queue{
 			})
 			.then(value => {
 
-				value++;
-				var key = this.id[0] + value;
-				rclient.hset(this.id, key, value);
+				return this.getAlias()
+					.then( alias => {
 
-				if(callback) callback(key);
+						value++;
+						var key = alias ? alias[0] : this.id[0];
+						key = key + value;
+						rclient.hset('queue:' + this.id, key, value);
+						if(callback) callback(key);
+						return key;
 
-				return key;
+					});
 
 			})
 			.catch(err => { console.log(err); });
 
 	}
 
-	rmItem(key, callback){ rclient.hdel(this.id, key, callback); }
+	rmItem(key, callback){ rclient.hdel('queue:' + this.id, key, callback); }
 
-	rm(callback){ rclient.del(this.id, callback); }
+	rm(callback){ rclient.del('queue:' + this.id, callback); }
 
 }
 

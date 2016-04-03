@@ -1,9 +1,10 @@
 var Client = function(){}
 
-Client.prototype.change = function(queue){
+Client.prototype.change = function(id, alias){
 
 	var fd = new FormData();
-	fd.append('queue', queue);
+	fd.append('id', id);
+	fd.append('alias', alias);
 
 	sf.popup.open();
 

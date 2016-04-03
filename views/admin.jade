@@ -11,7 +11,7 @@ html(lang="ru")
 		.hflex
 			each obj, qid in queues
 				div(id="#{qid}").queue
-					div.title= qid
+					div.title= aliases[qid]
 					each value, id in obj
 						div.client= id
 							button(onclick="admin.close('#{qid}', '#{id}');").closer.margin-0.padding-0

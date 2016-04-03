@@ -48,11 +48,13 @@ app.post('/admin/close', function(req, res, next){
 
 app.post('/new-client', (req, res) => {
 
-	if(!req.body.queue) res.json({ notify: 'Ошибка запроса.' });
+	if(!req.body.id || !req.body.alias) res.json({ notify: 'Ошибка запроса.' });
 
-	queue.get(req.body.queue).newItem()
+	queue.get(req.body.id)
+		.newAlias(req.body.alias)
+		.newItem()
 		.then(id => {
-			queue.publish(req.body.queue);
+			queue.publish(req.body.id);
 			res.json({ content: id.toUpperCase() });
 		});
 
@@ -62,26 +64,37 @@ app.post('/new-client', (req, res) => {
 app.get('/admin', (req, res) => {
 
 	var queues = {};
+	var aliases = {};
 
 	queue.getAll(objects => {
 
 		var promise = function(queue){
 			return (new Promise((res, rej) => {
+
 				queue.getItems()
 					.then(items => {
+
 						queues[queue.id] = items;
-						res(items);
+						queue.getAlias()
+							.then(alias => {
+
+								aliases[queue.id] = alias ? alias : queue.id;
+								res(items);
+
+							});
+
 					});
+
 			}));
 		}
 
 		Promise.all(objects.map(promise))
 			.then(results => {
-				res.render('admin', {queues: queues});
+				res.render('admin', {queues: queues, aliases: aliases});
 			})
 			.catch(err => {
 				console.log(err);
-				res.render('admin', {queues: {}});
+				res.render('admin', {queues: queues, aliases: aliases});
 			});
 
 	});
@@ -90,11 +103,16 @@ app.get('/admin', (req, res) => {
 
 app.get('/admin/:queue', (req, res) => {
 
-	console.log(req.params.queue);
+	var q = queue.get(req.params.queue);
 
-	queue.get(req.params.queue).getItems()
+	q.getItems()
 		.then(items => {
-			res.render('items', {qid: req.params.queue, obj: items});
+
+			q.getAlias()
+				.then(alias => {
+					res.render('items', {qid: req.params.queue, obj: items, alias: alias});
+				});
+
 		})
 		.catch(err => { console.log(err); });
 
