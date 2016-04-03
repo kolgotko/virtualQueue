@@ -9,14 +9,6 @@ var bodyParser = require('body-parser');
 var multipart = require('connect-multiparty');
 var queue = require('./queue.js');
 
-var redis = require("redis");
-var rclient = redis.createClient({prefix: 'queue:'});
-
-rclient.on("error", function (err) {
-	console.log("Error " + err);
-});
-
- 
 var app = express();
 
 app.set('trust proxy', 1) // trust first proxy
@@ -32,67 +24,79 @@ app.use(cookieSession({
 	keys: ['key1', 'key2']
 }));
 
-app.post('/admin/close', function(req, resp, next){
+app.get('/admin/subscribe', function(req, res){
+
+	queue.subscribe((channel, data) => {
+
+		res.json({ queue: data });
+
+	});
+
+});
+
+app.post('/admin/close', function(req, res, next){
 
 	if(!req.body.queue || !req.body.id)
-		resp.json({ notify: 'Ошибка запроса. Переданы не все данные.' });
+		res.json({ notify: 'Ошибка запроса. Переданы не все данные.' });
 
 	queue.get(req.body.queue).rmItem(req.body.id, (err, status) => {
-		resp.json({ status: status });
+		queue.publish(req.body.queue);
+		res.json({ status: status });
 	});
 
 });
 
-app.post('/new-client', (req, resp) => {
+app.post('/new-client', (req, res) => {
 
-	if(!req.body.category) resp.json({ notify: 'Ошибка запроса.' });
+	if(!req.body.queue) res.json({ notify: 'Ошибка запроса.' });
 
-	queue.get(req.body.category).newItem(id => {
-		resp.json({ content: id.toUpperCase() });
-	});
+	queue.get(req.body.queue).newItem()
+		.then(id => {
+			queue.publish(req.body.queue);
+			res.json({ content: id.toUpperCase() });
+		});
 
 });
 
 
-app.get('/admin', function(req, resp){
+app.get('/admin', (req, res) => {
 
-	// rclient.del('queue:first');
-	
 	var queues = {};
 
-	(new Promise((res, rej) => {
+	queue.getAll(objects => {
 
-		rclient.keys('queue:*', (err, keys) => {
-			if(err) rej(err);
-			res(keys);
-		});
-	
-	}))
-		.then(keys => {
-
-			var promise = function(key){
-
-				key = key.split(':')[1];
-
-				return new Promise((res, rej) => {
-
-					rclient.hgetall(key, (err, obj) => {
-						if(err) rej(err);
-						queues[key] = obj;
-						res(true);
+		var promise = function(queue){
+			return (new Promise((res, rej) => {
+				queue.getItems()
+					.then(items => {
+						queues[queue.id] = items;
+						res(items);
 					});
+			}));
+		}
 
-				});
+		Promise.all(objects.map(promise))
+			.then(results => {
+				res.render('admin', {queues: queues});
+			})
+			.catch(err => {
+				console.log(err);
+				res.render('admin', {queues: {}});
+			});
 
-			}
+	});
 
-			return Promise.all(keys.map(promise));
+});
 
+app.get('/admin/:queue', (req, res) => {
+
+	console.log(req.params.queue);
+
+	queue.get(req.params.queue).getItems()
+		.then(items => {
+			res.render('items', {qid: req.params.queue, obj: items});
 		})
-		.then(result => {
-			resp.render('admin', {queues: queues});
-		})
-		.catch(err => { console.log(err); resp.render('admin', {queues: queues}); });
+		.catch(err => { console.log(err); });
 
 });
 
