@@ -63,58 +63,19 @@ app.post('/new-client', (req, res) => {
 
 app.get('/admin', (req, res) => {
 
-	var queues = {};
-	var aliases = {};
-
-	queue.getAll(objects => {
-
-		var promise = function(queue){
-			return (new Promise((res, rej) => {
-
-				queue.getItems()
-					.then(items => {
-
-						queues[queue.id] = items;
-						queue.getAlias()
-							.then(alias => {
-
-								aliases[queue.id] = alias ? alias : queue.id;
-								res(items);
-
-							});
-
-					});
-
-			}));
-		}
-
-		Promise.all(objects.map(promise))
-			.then(results => {
-				res.render('admin', {queues: queues, aliases: aliases});
-			})
-			.catch(err => {
-				console.log(err);
-				res.render('admin', {queues: queues, aliases: aliases});
-			});
-
-	});
+	queue.getAllData()
+		.then(result => {
+			res.render('admin', result);
+		});
 
 });
 
-app.get('/admin/:queue', (req, res) => {
+app.get('/admin/queues', (req, res) => {
 
-	var q = queue.get(req.params.queue);
-
-	q.getItems()
-		.then(items => {
-
-			q.getAlias()
-				.then(alias => {
-					res.render('items', {qid: req.params.queue, obj: items, alias: alias});
-				});
-
-		})
-		.catch(err => { console.log(err); });
+	queue.getAllData()
+		.then(result => {
+			res.render('queues', result);
+		});
 
 });
 

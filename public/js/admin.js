@@ -11,7 +11,7 @@ Admin.prototype.subscribe = function(){
 		callback: function(req){
 			try{
 				var res = JSON.parse(req.responseText);
-				if(res.queue) this.refresh(res.queue);
+				if(res.queue) this.refresh();
 			}
 			catch(e){ console.log(e); }
 			this.subscribe();
@@ -27,14 +27,14 @@ Admin.prototype.subscribe = function(){
 
 }
 
-Admin.prototype.refresh = function(id){
+Admin.prototype.refresh = function(){
 
 	var data = {
 		context: this,
-		dst: '/admin/' + id,
+		dst: '/admin/queues',
 		method: 'GET',
 		callback: function(req){
-			sf('#'+id).inner = req.responseText;
+			sf('#queues').inner = req.responseText;
 		},
 		fallback: function(){ sf.alert('Возникли проблемы с подключением.', 'err'); },
 	}

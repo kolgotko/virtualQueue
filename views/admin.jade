@@ -8,13 +8,7 @@ html(lang="ru")
 		link(rel="stylesheet" href="/css/admin.css")/
 		link(rel="stylesheet" href="/css/sf.css")/
 	body
-		.hflex
-			each obj, qid in queues
-				div(id="#{qid}").queue
-					div.title= aliases[qid]
-					each value, id in obj
-						div.client= id
-							button(onclick="admin.close('#{qid}', '#{id}');").closer.margin-0.padding-0
-
+		.hflex#queues
+			include queues.jade
 		script(src="/js/sf.js")
 		script(src="/js/admin.js")

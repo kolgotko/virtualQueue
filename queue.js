@@ -26,14 +26,50 @@ class Queue{
 					return this.get.call(this, key.split(':')[2]);
 				});
 
-				console.log(result)
-
 				if(callback) callback(result);
 				return result;
 
 			})
 			.catch(err => { console.log(err); });
 
+	}
+
+	static getAllData(){
+
+		var queues = {};
+		var aliases = {};
+
+		return this.getAll()
+			.then(objects => {
+
+				var promise = (queue) => {
+
+					return (new Promise((res, rej) => {
+
+						queue.getItems()
+							.then(items => {
+
+								queues[queue.id] = items;
+								queue.getAlias()
+									.then(alias => {
+
+										aliases[queue.id] = alias ? alias : queue.id;
+										res(items);
+
+									});
+
+							});
+
+					}));
+
+				}
+
+				return Promise.all(objects.map(promise))
+					.then(result => {
+						return { queues: queues, aliases: aliases };
+					});
+
+			});
 	}
 
 	static subscribe(callback){
@@ -69,6 +105,7 @@ class Queue{
 		}));
 
 	}
+
 
 	newAlias(alias){
 
