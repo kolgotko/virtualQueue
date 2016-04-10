@@ -24,3 +24,50 @@
 	top: 0px;
 	right: 0px;
 }
+
+.queue .client .closer{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	left: 0px;
+}
+.queue .client input[type="checkbox"]{
+	display: none;
+}
+.queue .client input[type="checkbox"]:checked + .confirm-delete{
+	display: block;
+}
+.queue .client .confirm-delete{
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background: #fff;
+	border: 1px solid #FB6A6B;
+	padding: calc(1rem - 2px);
+	overflow: hidden;
+}
+.queue .client .confirm-delete span{
+	vertical-align: middle;
+	margin-right: 5px;;
+}
+.queue .client .confirm-delete .buttons{
+	display: inline-block;
+	vertical-align: middle;
+	width: 1rem;
+	height: 1rem;
+	margin: 0px 5px;
+	cursor: pointer;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+.queue .client .confirm-delete .ok{
+	background: url(/icons/ok.svg);
+}
+.queue .client .confirm-delete .abort{
+	background: url(/icons/abort.svg);
+}

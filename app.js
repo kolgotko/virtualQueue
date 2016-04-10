@@ -28,7 +28,7 @@ app.get('/admin/subscribe', function(req, res){
 
 	queue.subscribe((channel, data) => {
 
-		res.json({ queue: data });
+		!res.finished && res.json({ queue: data });
 
 	});
 

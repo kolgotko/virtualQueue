@@ -3,4 +3,10 @@ each obj, qid in queues
 		div.title= aliases[qid]
 		each value, id in obj
 			div.client= id
-				button(onclick="admin.close('#{qid}', '#{id}');").closer.margin-0.padding-0
+				label(for="check-delete-#{id}").closer
+				input(type="checkbox" id="check-delete-#{id}")
+				div.confirm-delete
+					span Закрыть #{id} ?
+					div(onclick="admin.close('#{qid}', '#{id}');").ok.buttons
+					label(for="check-delete-#{id}").abort.buttons
+
