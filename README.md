@@ -1,14 +1,14 @@
 # virtualQueue
 Queue service
 
-## requirements:
+### requirements:
  - [Node.js](https://nodejs.org/en/).
  - [Redis](http://redis.io). For Windows users [here](https://github.com/MSOpenTech/redis/releases).
  - [npm](https://www.npmjs.com/).
  - [bower](http://bower.io/).
  
 
-## Installation and start:
+### Installation and start:
 ```
  git clone https://github.com/kolgotko/virtualQueue
  cd virtualQueue
