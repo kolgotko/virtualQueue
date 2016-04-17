@@ -8,7 +8,7 @@ Queue service
  - [bower](http://bower.io/).
  
 
-### Installation and start:
+### Install and start:
 ```
  git clone https://github.com/kolgotko/virtualQueue
  cd virtualQueue
