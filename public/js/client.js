@@ -43,6 +43,10 @@ Client.prototype.change = function(id, alias){
 
 }
 
+Client.prototype.showIOMessage = function(){
+	sf.popup('<p class="content">Обслуживание<br />без очереди.</p>');
+}
+
 sf.ready(function(){
 	client = new Client;
 });
